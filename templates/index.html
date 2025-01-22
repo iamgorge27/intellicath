@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>intellicath</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>INTELLICATH</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Urine Output</th>
+                <th>Urine Flow Rate</th>
+                <th>Catheter Bag Volume (ml)</th>
+                <th>Remaining Volume (ml)</th>
+                <th>Time until full</th>
+            </tr>
+        </thead>
+        <tbody id="monitoringData">
+            <!-- Data rows will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchMonitoringData() {
+            try {
+                // Simulated API Call (Replace this with real backend logic)
+                const response = await fetch('http://localhost:5000/predict');
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch monitoring data');
+                }
+
+                const data = await response.json();
+                const tableBody = document.getElementById('monitoringData');
+                tableBody.innerHTML = '';
+
+                data.forEach(entry => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${entry.urine_output}</td>
+                        <td>${entry.urine_flow_rate}</td>
+                        <td>${entry.catheter_bag_volume}</td>
+                        <td>${entry.remaining_volume}</td>
+                        <td>${entry.predicted_time}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                const tableBody = document.getElementById('monitoringData');
+                tableBody.innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Fetch data every 5 seconds
+        setInterval(fetchMonitoringData, 5000);
+        fetchMonitoringData(); // Initial fetch
+    </script>
+</body>
+</html>
